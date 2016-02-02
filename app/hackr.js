@@ -1,42 +1,44 @@
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) { // amd
-        define(['jquery', 'exports'], function ($, exports) {
+        define(['jquery', 'exports'], function($, exports) {
             root.Hackr = factory(exports, $);
         });
     } else if (typeof exports !== 'undefined') { // node js / common js
         factory(exports);
     } else { // global
-        root.Hackr = factory({}, (root.jQuery || root.Zepto || root.ender || root.$));
+        root.Hackr = factory({}, (root.jQuery || root.Zepto || root.ender ||
+            root.$));
     }
-}(this, function (Hackr, $) {
+}(this, function(Hackr, $) {
 
     // SETTINGS, SHARED MEMBERS
 
     var isRunning,
-    isProgress,
-    jQueryFxOffState,
-    $wrapper,
-    $code,
-    $cursor,
-    $input,
-    $alert,
-    buffer,
-    options = {},
-    intervals = {},
-    colors = {
-        RED: 'red',
-        GREEN: 'green',
-        YELLOW: 'yellow',
-        BLUE: 'lightblue'
-    },
-    alertTypes = {
-        SUCCESS: colors.GREEN,
-        INFO: colors.BLUE,
-        WARNING: colors.YELLOW,
-        DANGER: colors.RED
-    },
-    mandatoryOptionKeys = [
-        'fauxCode', 'targetEl'],
+        isProgress,
+        jQueryFxOffState,
+        $wrapper,
+        $code,
+        $cursor,
+        $input,
+        $alert,
+        buffer,
+        options = {},
+        intervals = {},
+        colors = {
+            RED: 'red',
+            GREEN: 'green',
+            YELLOW: 'yellow',
+            BLUE: 'lightblue'
+        },
+        alertTypes = {
+            SUCCESS: colors.GREEN,
+            INFO: colors.BLUE,
+            WARNING: colors.YELLOW,
+            DANGER: colors.RED
+        },
+        mandatoryOptionKeys = [
+            'fauxCode', 'targetEl'
+        ],
         defaultOptions = {
             cursorBlinkRate: 400,
             alerts: [{
@@ -133,14 +135,14 @@
      * starts the hacker simulator.
      * @param options options for the simulator.
      */
-    Hackr.start = function (options) {
+    Hackr.start = function(options) {
         isRunning || bootstrap(options) && (isRunning = true);
     };
 
     /**
      * stops the hacker simulator.
      */
-    Hackr.stop = function () {
+    Hackr.stop = function() {
         isRunning && teardown() && (isRunning = false);
     };
 
@@ -148,7 +150,7 @@
      * prints a message in its own line, simulating a console prompt.
      * @param message the message to print.
      */
-    Hackr.prompt = function (message) {
+    Hackr.prompt = function(message) {
         isRunning && prompt('\n' + message + '\n');
     };
 
@@ -158,7 +160,7 @@
      * @param tick an interval for appending new dots, in milliseconds.
      * @param callback a function to execute once the progress is over.
      */
-    Hackr.progress = function (dots, tick, callback) {
+    Hackr.progress = function(dots, tick, callback) {
         isRunning && progress(dots, tick, callback);
     };
 
@@ -169,14 +171,14 @@
      *      'type': {enum} the alert type, sets the alert box background color. use values from Hackr.ALERT_TYPE.
      *      'blink': {boolean} optional - whether the alert box should blink.
      */
-    Hackr.alert = function (alertOptions) {
+    Hackr.alert = function(alertOptions) {
         isRunning && alert(alertOptions);
     };
 
 
     // PRIVATE FUNCTIONS
 
-    var bootstrap = function (opts) {
+    var bootstrap = function(opts) {
         opts = opts || {};
         validateOptions(opts);
         options = opts;
@@ -202,7 +204,7 @@
         return true;
     };
 
-    var teardown = function () {
+    var teardown = function() {
         clearAllIntervals();
         $wrapper.remove();
         restoreAnimation();
@@ -210,139 +212,146 @@
         return true;
     };
 
-    var validateOptions = function (options) {
+    var validateOptions = function(options) {
         // fill in default options
         merge(options, defaultOptions);
         // check mandatory options
-        validateExists(options, mandatoryOptionKeys, 'this option must be provided!');
+        validateExists(options, mandatoryOptionKeys,
+            'this option must be provided!');
     };
 
-    var greet = function (msg) {
+    var greet = function(msg) {
         msg && prompt('\n' + msg + '\n\n');
     };
 
-    var prompt = function (msg) {
+    var prompt = function(msg) {
         msg && $code && $code.append(msg);
     };
 
-    var progress = function (dots, tick, callback) {
+    var progress = function(dots, tick, callback) {
         dots = dots || 10;
         tick = tick || 400;
         var count = 0;
-        intervals.progress = setInterval(function () {
+        intervals.progress = setInterval(function() {
             count++;
             if (count <= dots) {
                 prompt('.');
             } else {
                 clearInterval(intervals.progress);
                 delete intervals.progress;
-                (typeof callback === 'function') && callback();
+                (typeof callback === 'function') &&
+                callback();
             }
         }, tick);
     };
 
-    var alert = function (alertOptions) {
-        alertOptions.message && contains(alertTypes, alertOptions.type) && $wrapper && $wrapper.append($alert = initAlert(alertOptions));
+    var alert = function(alertOptions) {
+        alertOptions.message && contains(alertTypes, alertOptions.type) &&
+            $wrapper && $wrapper.append($alert = initAlert(
+                alertOptions));
     };
 
-    var initAlert = function (alertOptions) {
+    var initAlert = function(alertOptions) {
         var $el = $('<div>')
             .css(css.alert)
             .css('backgroundColor', alertOptions.type || colors.RED)
             .append($('<span>')
-            .text(alertOptions.message)
-            .css(css.alertMessage));
+                .text(alertOptions.message)
+                .css(css.alertMessage));
         alertOptions.blink && blink('alertBlink', 300, $el);
         return $el;
     };
 
-    var destroyAlert = function () {
+    var destroyAlert = function() {
         $alert.remove();
         $alert = null;
     };
 
-    var initBuffer = function (fauxCode) {
+    var initBuffer = function(fauxCode) {
         return fauxCode.replace(regex.comments, '') // strip code comments (naively)
-        .replace(regex.emptyLines, '') // remove leftover space after stripping comments
-        .split(regex.splitter.js); // turn the string into a stream
+            .replace(regex.emptyLines, '') // remove leftover space after stripping comments
+            .split(regex.splitter.js); // turn the string into a stream
     };
 
-    var initWrapperEl = function () {
+    var initWrapperEl = function() {
         return $('<div>')
             .click(Hackr.stop)
             .css(css.wrapper);
     };
 
-    var initCodeEl = function () {
+    var initCodeEl = function() {
         return $('<pre>')
             .css(css.code);
     };
 
-    var initCursorEl = function () {
+    var initCursorEl = function() {
         return $('<span>')
             .css(css.cursor);
     };
 
-    var initInputEl = function () {
+    var initInputEl = function() {
         return $('<input>')
             .attr('type', 'text')
-            .keydown(function (e) {
-            (e.which === 13) && isRunning && e.preventDefault(); // ENTER breaks the auto-scroll. fuck it, we don't need it
-        })
-            .keyup(function (e) { // keypress won't detect ESC, use keyup instead to trigger teardown
-            (e.which === 27) && Hackr.stop();
-        })
-            .keypress(function (e) {
-            isRunning && !isProgress && onKeyPress(e);
-        })
-            .blur(function (e) {
-            this.focus(); // keep focus at all costs!
-        })
+            .keydown(function(e) {
+                (e.which === 13) && isRunning && e.preventDefault(); // ENTER breaks the auto-scroll. fuck it, we don't need it
+            })
+            .keyup(function(e) { // keypress won't detect ESC, use keyup instead to trigger teardown
+                (e.which === 27) && Hackr.stop();
+            })
+            .keypress(function(e) {
+                isRunning && !isProgress && onKeyPress(e);
+            })
+            .blur(function(e) {
+                this.focus(); // keep focus at all costs!
+            })
             .css(css.input);
     };
 
-    var onKeyPress = function (e) {
+    var onKeyPress = function(e) {
         var nextToken, keyCode;
         $alert && destroyAlert();
-        ((keyCode = e.which) in numericKeyCodes) ? numericKeyCodes.hasOwnProperty(keyCode) && onNumericKeyPress(keyCode) : (nextToken = buffer.shift()) && onCharKeyPress(nextToken);
+        ((keyCode = e.which) in numericKeyCodes) ? numericKeyCodes.hasOwnProperty(
+            keyCode) && onNumericKeyPress(keyCode): (nextToken =
+            buffer.shift()) && onCharKeyPress(nextToken);
 
     };
 
-    var onCharKeyPress = function (token) {
+    var onCharKeyPress = function(token) {
         $code.append(token);
         // input element must be hidden by negative bottom offset (and not top!) in order for the auto-scroll to work
         $wrapper.prop('scrollTop', $wrapper.height());
     };
 
-    var onNumericKeyPress = function (keyCode) {
+    var onNumericKeyPress = function(keyCode) {
         var alertOptions;
-        options.alerts && (alertOptions = options.alerts[numericKeyCodes[keyCode]]) && alert(alertOptions);
+        options.alerts && (alertOptions = options.alerts[
+            numericKeyCodes[keyCode]]) && alert(alertOptions);
     };
 
-    var initCursorBlink = function (cursorBlinkRate) {
+    var initCursorBlink = function(cursorBlinkRate) {
         blink('cursorBlink', cursorBlinkRate, $cursor);
     };
 
-    var blink = function (uid, rate, $el) {
-        intervals[uid] = setInterval(function () {
-            $el.toggle(function () {
+    var blink = function(uid, rate, $el) {
+        intervals[uid] = setInterval(function() {
+            $el.toggle(function() {
                 $el.css('visibility', 'hidden');
-            }, function () {
+            }, function() {
                 $el.css('visibility', 'visible');
             });
         }, rate);
     };
 
-    var disableAnimation = function () {
+    var disableAnimation = function() {
         jQueryFxOffState = $.fx.off;
         $.fx.off = true;
     };
 
-    var restoreAnimation = function () {
+    var restoreAnimation = function() {
         $.fx.off = jQueryFxOffState;
     };
 
-    var clearAllIntervals = function () {
+    var clearAllIntervals = function() {
         var prop, interval;
         for (prop in intervals) {
             if (intervals.hasOwnProperty(prop)) {
@@ -356,7 +365,7 @@
 
     // GENERIC UTILITIES
 
-    var contains = function (obj, val) {
+    var contains = function(obj, val) {
         var key, prop;
         for (key in obj) {
             if (obj.hasOwnProperty(key)) {
@@ -369,22 +378,24 @@
         return false;
     };
 
-    var merge = function (target, source) {
+    var merge = function(target, source) {
         var srcKey, srcVal;
         for (srcKey in source) {
             if (source.hasOwnProperty(srcKey)) {
                 srcVal = source[srcKey];
-                (typeof target[srcKey] === 'undefined') && (target[srcKey] = srcVal);
+                (typeof target[srcKey] === 'undefined') && (target[
+                    srcKey] = srcVal);
             }
         }
     };
 
-    var validateExists = function (obj, keys, errMsg) {
+    var validateExists = function(obj, keys, errMsg) {
         var i, key;
         for (i = 0; i < keys.length; i++) {
             key = keys[i];
             if (!obj[key]) {
-                throw new Error('[' + key + '] not found. ' + errMsg);
+                throw new Error('[' + key + '] not found. ' +
+                    errMsg);
             }
         }
     };
@@ -393,13 +404,13 @@
     return Hackr;
 }));
 
-var init = function (data) {
+var init = function(data) {
     Hackr.start({
         targetEl: $('.hackr'),
         greeting: '- - - - - yo, hackr! - - - - -',
         fauxCode: data
     });
-    Hackr.progress(5, 400, function () {
+    Hackr.progress(5, 400, function() {
         Hackr.prompt('loaded system configurations');
     });
 };
