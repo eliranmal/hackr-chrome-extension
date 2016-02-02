@@ -406,7 +406,7 @@
 
 var init = function(data) {
     Hackr.start({
-        targetEl: $('.hackr'),
+        targetEl: $('body'),
         greeting: '- - - - - yo, hackr! - - - - -',
         fauxCode: data
     });
