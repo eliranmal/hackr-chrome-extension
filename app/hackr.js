@@ -127,7 +127,7 @@
 
     // PUBLIC API
 
-    Hackr.VERSION = '1.0.0';
+    Hackr.VERSION = '0.1.0';
 
     Hackr.ALERT_TYPE = alertTypes;
 
