@@ -415,4 +415,13 @@ var init = function(data) {
     });
 };
 
-$.get('https://rawgit.com/jrburke/r.js/master/dist/r.js', init);
+var loadDefault = function() {
+    $.get('https://rawgit.com/jrburke/r.js/master/dist/r.js', init);
+}
+
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    if (message === 'hackr:start') {
+        loadDefault();
+    }
+});
