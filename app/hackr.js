@@ -1,3 +1,7 @@
+
+// todo - hide all other elements on the page, and restore them when done (without breaking anything)
+
+
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) { // amd
         define(['jquery', 'exports'], function($, exports) {
@@ -37,7 +41,7 @@
             DANGER: colors.RED
         },
         mandatoryOptionKeys = [
-            'fauxCode', 'targetEl'
+            'fauxCode'
         ],
         defaultOptions = {
             cursorBlinkRate: 400,
@@ -73,18 +77,18 @@
         css = {
             wrapper: {
                 position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 999999,
+                top: '0',
+                bottom: '0',
+                left: '0',
+                right: '0',
+                zIndex: '999999',
                 overflow: 'auto',
                 padding: '20px',
-                lineHeight: 1.5,
+                lineHeight: '1.5',
                 fontSize: '18px',
                 fontFamily: 'monospace',
                 backgroundColor: '#000',
-                opacity: .9
+                opacity: '0.9'
             },
             code: {
                 display: 'inline',
@@ -196,7 +200,7 @@
         $wrapper.append($code);
         $wrapper.append($cursor);
         $wrapper.append($input);
-        $(opts.targetEl).append($wrapper);
+        $(opts.targetEl || 'body').append($wrapper);
         $input.focus();
 
         greet(opts.greeting);
@@ -406,7 +410,6 @@
 
 var init = function(data) {
     Hackr.start({
-        targetEl: $('body'),
         greeting: '- - - - - yo, hackr! - - - - -',
         fauxCode: data
     });
