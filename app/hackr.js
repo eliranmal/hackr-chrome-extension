@@ -417,7 +417,7 @@ var init = function(data) {
 
 var loadDefault = function() {
     $.get('https://rawgit.com/jrburke/r.js/master/dist/r.js', init);
-}
+};
 
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {

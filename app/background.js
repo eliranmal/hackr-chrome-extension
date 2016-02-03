@@ -1,3 +1,3 @@
 chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.runtime.sendMessage('hackr:start');
+    chrome.tabs.sendMessage(tab.id, 'hackr:start');
 });
