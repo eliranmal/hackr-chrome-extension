@@ -1,7 +1,3 @@
-
-// todo - hide all other elements on the page, and restore them when done (without breaking anything)
-
-
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) { // amd
         define(['jquery', 'exports'], function($, exports) {
