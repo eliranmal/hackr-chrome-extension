@@ -1,0 +1,32 @@
+{
+    "name": "hackr",
+    "description": "a fun hacker simulator",
+    "version": "0.1.0",
+    "permissions": [
+        "activeTab"
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "content_scripts": [{
+        "matches": [
+            "http://*/*"
+        ],
+        "js": [
+            "lib/jquery/jquery-2.2.0.min.js",
+            "hackr.js"
+        ],
+        "run_at": "document_end"
+    }],
+    "browser_action": {
+        "default_title": "hackr()",
+        "default_icon": "images/logo-48.png"
+    },
+    "icons": {
+        "48": "images/logo-48.png"
+    },
+    "manifest_version": 2
+}
