@@ -17,7 +17,8 @@
         ],
         "js": [
             "lib/jquery/jquery-2.2.0.min.js",
-            "hackr.js"
+            "lib/hackr/hackr.js",
+            "app.js"
         ],
         "run_at": "document_end"
     }],
