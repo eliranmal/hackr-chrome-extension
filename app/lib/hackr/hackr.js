@@ -24,6 +24,7 @@
         buffer,
         options = {},
         intervals = {},
+        elementsDisplayTreeMap = {},
         colors = {
             RED: 'red',
             GREEN: 'green',
@@ -185,6 +186,8 @@
 
         buffer = initBuffer(opts.fauxCode);
 
+        hideHost();
+
         $wrapper = initWrapperEl();
         $code = initCodeEl();
         $cursor = initCursorEl();
@@ -208,8 +211,32 @@
         clearAllIntervals();
         $wrapper.remove();
         restoreAnimation();
-
+        showHost();
         return true;
+    };
+
+    var hideHost = function() {
+        var $el, display;
+        $('body > *').not('script,noscript').each(function(index, el) {
+            $el = $(el);
+            display = $el.css('display');
+            if (!(display in elementsDisplayTreeMap)) {
+                elementsDisplayTreeMap[display] = {};
+            }
+            elementsDisplayTreeMap[display][index] = $el;
+            $el.css('display', 'none');
+        });
+    };
+
+    var showHost = function() {
+        var display, displayImplMap, index, el;
+        for (display in elementsDisplayTreeMap) {
+            displayImplMap = elementsDisplayTreeMap[display];
+            for (index in displayImplMap) {
+                el = displayImplMap[index];
+                $(el).css('display', display);
+            }
+        }
     };
 
     var validateOptions = function(options) {
