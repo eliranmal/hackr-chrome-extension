@@ -24,7 +24,7 @@
         buffer,
         options = {},
         intervals = {},
-        elementsDisplayTreeMap = {},
+        elementDisplayTreeMap = {},
         colors = {
             RED: 'red',
             GREEN: 'green',
@@ -38,7 +38,7 @@
             DANGER: colors.RED
         },
         mandatoryOptionKeys = [
-            'fauxCode'
+            // 'fauxCode'
         ],
         defaultOptions = {
             cursorBlinkRate: 400,
@@ -50,7 +50,8 @@
                 type: alertTypes.SUCCESS,
                 message: 'access granted',
                 blink: true
-            }]
+            }],
+            resourceUrl: 'https://rawgit.com/jrburke/r.js/master/dist/r.js'
         },
         regex = {
             comments: /(?:\/\*(?:[\s\S]*?)\*\/)|(?:([\s;])+\/\/(?:.*)$)/gm,
@@ -137,6 +138,7 @@
      * @param options options for the simulator.
      */
     Hackr.start = function(options) {
+        console.log('> start');
         isRunning || bootstrap(options) && (isRunning = true);
     };
 
@@ -180,13 +182,24 @@
     // PRIVATE FUNCTIONS
 
     var bootstrap = function(opts) {
+        console.debug('> bootstrap');
         opts = opts || {};
         validateOptions(opts);
         options = opts;
+        init();
+        $.get(options.resourceUrl, onResourceLoad);
+        return true;
+    };
 
-        buffer = initBuffer(opts.fauxCode);
+    var onResourceLoad = function(file) {
+        console.debug('> onResourceLoad');
+        // buffer = initBuffer(options.fauxCode);
+        buffer = initBuffer(file);
+        greet('buffer initialized');
+    };
 
-        hideHost();
+    var init = function() {
+        console.debug('> init');
 
         $wrapper = initWrapperEl();
         $code = initCodeEl();
@@ -194,49 +207,28 @@
         $input = initInputEl();
 
         disableAnimation(); // we don't want the blink to be animated
-        initCursorBlink(opts.cursorBlinkRate);
+        initCursorBlink(options.cursorBlinkRate);
+
+        hideHost();
 
         $wrapper.append($code);
         $wrapper.append($cursor);
         $wrapper.append($input);
-        $(opts.targetEl || 'body').append($wrapper);
+        $(options.targetEl || 'body').append($wrapper);
         $input.focus();
 
-        greet(opts.greeting);
-
-        return true;
+        greet(options.greeting);
     };
 
     var teardown = function() {
+        console.debug('> teardown');
+
+        buffer = '';
         clearAllIntervals();
         $wrapper.remove();
         restoreAnimation();
         showHost();
         return true;
-    };
-
-    var hideHost = function() {
-        var $el, display;
-        $('body > *').not('script,noscript').each(function(index, el) {
-            $el = $(el);
-            display = $el.css('display');
-            if (!(display in elementsDisplayTreeMap)) {
-                elementsDisplayTreeMap[display] = {};
-            }
-            elementsDisplayTreeMap[display][index] = $el;
-            $el.css('display', 'none');
-        });
-    };
-
-    var showHost = function() {
-        var display, displayImplMap, index, el;
-        for (display in elementsDisplayTreeMap) {
-            displayImplMap = elementsDisplayTreeMap[display];
-            for (index in displayImplMap) {
-                el = displayImplMap[index];
-                $(el).css('display', display);
-            }
-        }
     };
 
     var validateOptions = function(options) {
@@ -338,7 +330,6 @@
         ((keyCode = e.which) in numericKeyCodes) ? numericKeyCodes.hasOwnProperty(
             keyCode) && onNumericKeyPress(keyCode): (nextToken =
             buffer.shift()) && onCharKeyPress(nextToken);
-
     };
 
     var onCharKeyPress = function(token) {
@@ -365,6 +356,30 @@
                 $el.css('visibility', 'visible');
             });
         }, rate);
+    };
+
+    var hideHost = function() {
+        var $el, display;
+        $('body > *').not('script,noscript').each(function(index, el) {
+            $el = $(el);
+            display = $el.css('display');
+            if (!(display in elementDisplayTreeMap)) {
+                elementDisplayTreeMap[display] = {};
+            }
+            elementDisplayTreeMap[display][index] = $el;
+            $el.css('display', 'none');
+        });
+    };
+
+    var showHost = function() {
+        var display, displayImplMap, index, el;
+        for (display in elementDisplayTreeMap) {
+            displayImplMap = elementDisplayTreeMap[display];
+            for (index in displayImplMap) {
+                el = displayImplMap[index];
+                $(el).css('display', display);
+            }
+        }
     };
 
     var disableAnimation = function() {
