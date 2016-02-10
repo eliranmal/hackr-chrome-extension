@@ -2,7 +2,7 @@
 # hackr
 
 
-a chrome extension for hackr.js the fun hacker simulator.
+a fun hacker simulator chrome extension.
 
 check it out [on chrome web store][1].
 
