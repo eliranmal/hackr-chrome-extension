@@ -85,6 +85,7 @@
                 lineHeight: '1.5',
                 fontSize: '18px',
                 fontFamily: 'monospace',
+                textAlign: 'left',
                 backgroundColor: '#000',
                 opacity: '0.9'
             },
